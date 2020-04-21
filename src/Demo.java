@@ -15,9 +15,8 @@ public class Demo extends Application {
     double timeStamp;
     double prevTimeStamp;
     double elapsedTime;
+    double fpsTime;
     double fps;
-
-    Ball ball;
 
     public static void main(String[] args) {
         launch(args);
@@ -28,9 +27,8 @@ public class Demo extends Application {
         timeStamp = 0;
         prevTimeStamp = 0;
         elapsedTime = 0;
+        fpsTime = 0;
         fps = 0;
-
-        ball = new Ball(new Vector2D(0, 0), 30, 8, -Math.PI / 4);
     }
 
     @Override
@@ -49,6 +47,8 @@ public class Demo extends Application {
         // Get graphics context
         GraphicsContext gctx = canvas.getGraphicsContext2D();
 
+        Arena arena = new Arena(3000);
+
         // Animation timer will try to update 60 times per second
         prevTimeStamp = System.nanoTime() / 1000000000.0;
         new AnimationTimer()
@@ -59,17 +59,21 @@ public class Demo extends Application {
                 elapsedTime = timeStamp - prevTimeStamp;
                 prevTimeStamp = timeStamp;
 
-                // 1 / 60 = Optimal update time. Thus 1 / elapsedTime = Actual fps.
-                fps = 1 / elapsedTime;
-                System.out.println(fps);
+                fpsTime += elapsedTime;
+                if (fpsTime >= 1) {
+                    // 1 / 60 = Optimal update time. Thus 1 / elapsedTime = Actual fps.
+                    fps = 1 / elapsedTime;
+                    System.out.println(fps);
+                    fpsTime = 0;
+                }
 
                 // update
-                ball.update();
+                arena.update();
 
                 // draw
                 gctx.setFill(Color.rgb(20, 20, 20));
                 gctx.fillRect(0, 0, WIDTH, HEIGHT);
-                ball.draw(gctx);
+                arena.draw(gctx);
             }
         }.start();
 

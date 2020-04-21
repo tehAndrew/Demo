@@ -19,8 +19,8 @@ public class Ball {
     }
 
     public boolean intersects(Ball other) {
-        double dist = Math.sqrt((pos.x - other.pos.x) + (pos.y - other.pos.y));
-        return dist <= radius + other.radius;
+        double dist = Math.pow(pos.x - other.pos.x, 2) + Math.pow(pos.y - other.pos.y, 2);
+        return dist <= Math.pow(radius + other.radius, 2);
     }
 
     public void update() {
@@ -48,6 +48,7 @@ public class Ball {
     public void draw(GraphicsContext gctx) {
         if (colliding) {
             gctx.setFill(Color.rgb(200, 50, 30));
+            colliding = false;
         }
         else {
             gctx.setFill(Color.rgb(30, 50, 200));
