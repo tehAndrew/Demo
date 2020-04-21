@@ -5,6 +5,7 @@ import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
+import javafx.scene.text.Font;
 import javafx.stage.Stage;
 
 public class Demo extends Application {
@@ -47,7 +48,7 @@ public class Demo extends Application {
         // Get graphics context
         GraphicsContext gctx = canvas.getGraphicsContext2D();
 
-        Arena arena = new Arena(3000);
+        Arena arena = new Arena(2000);
 
         // Animation timer will try to update 60 times per second
         prevTimeStamp = System.nanoTime() / 1000000000.0;
@@ -60,7 +61,7 @@ public class Demo extends Application {
                 prevTimeStamp = timeStamp;
 
                 fpsTime += elapsedTime;
-                if (fpsTime >= 1) {
+                if (fpsTime >= 0.2) {
                     // 1 / 60 = Optimal update time. Thus 1 / elapsedTime = Actual fps.
                     fps = 1 / elapsedTime;
                     System.out.println(fps);
@@ -74,6 +75,16 @@ public class Demo extends Application {
                 gctx.setFill(Color.rgb(20, 20, 20));
                 gctx.fillRect(0, 0, WIDTH, HEIGHT);
                 arena.draw(gctx);
+
+                gctx.setFill(Color.rgb(40, 40, 40, 0.5));
+                gctx.fillRect(0, 0, 400, 120);
+
+                gctx.setFont(new Font(20));
+                gctx.setFill(Color.rgb(240, 240, 240));
+                gctx.fillText("FPS: " + Integer.toString((int) fps), 10, 20);
+                gctx.fillText("Amount of balls: " + Integer.toString(arena.getBallAmount()), 10, 50);
+                gctx.fillText("Amount of collision checks: " + Integer.toString(arena.getCollisionChecks()), 10, 80);
+                gctx.fillText("Amount of collisions: " + Integer.toString(arena.getCollisionsOccuring()), 10, 110);
             }
         }.start();
 

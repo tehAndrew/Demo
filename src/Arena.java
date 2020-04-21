@@ -4,12 +4,13 @@ import java.util.ArrayList;
 import java.util.Random;
 
 public class Arena {
-    private final int MIN_RADIUS = 5;
-    private final int MAX_RADIUS = 10;
-    private final double MIN_VEL = 0.1;
+    private final int MIN_RADIUS = 2;
+    private final int MAX_RADIUS = 4;
+    private final double MIN_VEL = 0.2;
     private final double MAX_VEL = 1;
 
     private ArrayList<Ball> balls;
+    private QuadTree qt;
     private int ballAmount;
     private int collisionChecks;
     private int collisionsOccuring;
@@ -28,11 +29,26 @@ public class Arena {
     }
 
     private void collisionCheck(Ball ball1) {
-        for(Ball ball2 : balls) {
-            collisionChecks++;
-            if (ball1.intersects(ball2) && ball1 != ball2) {
-                collisionsOccuring++;
-                ball1.collided();
+        for (Ball ball2 : balls) {
+            if (ball1 != ball2) {
+                collisionChecks++;
+                if (ball1.intersects(ball2)) {
+                    collisionsOccuring++;
+                    ball1.collided();
+                }
+            }
+        }
+    }
+
+    private void collisionCheckQuadTree(Ball ball1) {
+        ArrayList<Ball> qtBalls = qt.getPossibleColliders(ball1);
+        for (Ball ball2 : qtBalls) {
+            if (ball1 != ball2) {
+                collisionChecks++;
+                if (ball1.intersects(ball2)) {
+                    collisionsOccuring++;
+                    ball1.collided();
+                }
             }
         }
     }
@@ -57,6 +73,11 @@ public class Arena {
     }
 
     public void update() {
+        qt = new QuadTree();
+        for (Ball ball : balls) {
+            qt.insert(ball);
+        }
+
         collisionChecks = 0;
         collisionsOccuring = 0;
 
@@ -65,11 +86,12 @@ public class Arena {
         }
 
         for(Ball ball : balls) {
-            collisionCheck(ball);
+            collisionCheckQuadTree(ball);
         }
     }
 
     public void draw(GraphicsContext gctx) {
+        qt.draw(gctx);
         for(Ball ball : balls) {
             ball.draw(gctx);
         }

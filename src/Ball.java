@@ -23,6 +23,28 @@ public class Ball {
         return dist <= Math.pow(radius + other.radius, 2);
     }
 
+    // Check if the ball intersects with a rectangle
+    public boolean intersects(Vector2D rectPos, Vector2D rectDim) {
+        Vector2D circleDistance = new Vector2D(Math.abs(pos.x - (rectPos.x + rectDim.x / 2)), Math.abs(pos.y - (rectPos.y + rectDim.y / 2)));
+
+        if (circleDistance.x > (rectDim.x / 2 + radius)) {
+            return false;
+        }
+        if (circleDistance.y > (rectDim.y / 2 + radius)) {
+            return false;
+        }
+
+        if (circleDistance.x <= (rectDim.x / 2)) {
+            return true;
+        }
+        if (circleDistance.y <= (rectDim.x / 2)) {
+            return true;
+        }
+
+        double cornerDistanceSq = Math.pow(circleDistance.x - rectDim.x / 2, 2) + Math.pow(circleDistance.y - rectDim.y / 2, 2);
+        return (cornerDistanceSq <= Math.pow(radius, 2));
+    }
+
     public void update() {
         pos.add(vel);
 
