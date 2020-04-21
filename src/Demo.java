@@ -1,3 +1,4 @@
+import javafx.animation.AnimationTimer;
 import javafx.application.Application;
 import javafx.scene.Group;
 import javafx.scene.Scene;
@@ -6,18 +7,24 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.stage.Stage;
 
 public class Demo extends Application {
-    static final int WIDTH = 640;
-    static final int HEIGHT = 480;
-    static final String title = "QuadTree Demo";
+    final int WIDTH = 640;
+    final int HEIGHT = 480;
+    final String TITLE = "QuadTree Demo";
 
-    private GraphicsContext gctx;
+    double timeStamp;
+    double prevTimeStamp;
+    double elapsedTime;
+    double fps;
+
+    double x = 0;
 
     public static void main(String[] args) {
         launch(args);
     }
 
+    @Override
     public void start(Stage stage) {
-        stage.setTitle(title);
+        stage.setTitle(TITLE);
 
         // Setup scene graph
         Group rootNode = new Group();
@@ -29,7 +36,26 @@ public class Demo extends Application {
         rootNode.getChildren().add(canvas);
 
         // Get graphics context
-        gctx = canvas.getGraphicsContext2D();
+        GraphicsContext gctx = canvas.getGraphicsContext2D();
+
+        // Animation timer will try to update 60 times per second
+        prevTimeStamp = System.nanoTime() / 1000000000.0;
+        new AnimationTimer()
+        {
+            public void handle(long currentNanoTime)
+            {
+                timeStamp = currentNanoTime / 1000000000.0;
+                elapsedTime = timeStamp - prevTimeStamp;
+                prevTimeStamp = timeStamp;
+
+                // 1 / 60 = Optimal update time. Thus 1 / elapsedTime = Actual fps.
+                fps = 1 / elapsedTime;
+                System.out.println(fps);
+
+                // update
+                // draw
+            }
+        }.start();
 
         stage.show();
     }
