@@ -4,11 +4,12 @@ import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
 public class Demo extends Application {
-    final int WIDTH = 640;
-    final int HEIGHT = 480;
+    public static final int WIDTH = 1600;
+    public static final int HEIGHT = 900;
     final String TITLE = "QuadTree Demo";
 
     double timeStamp;
@@ -16,10 +17,20 @@ public class Demo extends Application {
     double elapsedTime;
     double fps;
 
-    double x = 0;
+    Ball ball;
 
     public static void main(String[] args) {
         launch(args);
+    }
+
+    @Override
+    public void init() {
+        timeStamp = 0;
+        prevTimeStamp = 0;
+        elapsedTime = 0;
+        fps = 0;
+
+        ball = new Ball(new Vector2D(0, 0), 30, 8, -Math.PI / 4);
     }
 
     @Override
@@ -53,7 +64,12 @@ public class Demo extends Application {
                 System.out.println(fps);
 
                 // update
+                ball.update();
+
                 // draw
+                gctx.setFill(Color.rgb(20, 20, 20));
+                gctx.fillRect(0, 0, WIDTH, HEIGHT);
+                ball.draw(gctx);
             }
         }.start();
 
