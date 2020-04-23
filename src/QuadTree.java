@@ -4,8 +4,8 @@ import javafx.scene.paint.Color;
 import java.util.ArrayList;
 
 public class QuadTree {
-    private final int MAX_DEPTH = 7;
-    private final int MAX_SIZE = 10;
+    private int maxDepth;
+    private int cap;
     private Node rootNode;
 
     private void insertRec(Ball ball, Node node, int level) {
@@ -25,7 +25,7 @@ public class QuadTree {
         }
         else {
             node.content.add(ball);
-            if (level < MAX_DEPTH && node.content.size() > MAX_SIZE) {
+            if (level < maxDepth && node.content.size() > cap) {
                 ArrayList<Ball> prevContent = node.subdivideAndGetContent();
                 for (Ball ballToMove : prevContent) {
                     insertRec(ballToMove, node, level);
@@ -59,7 +59,7 @@ public class QuadTree {
 
     private void drawRec(GraphicsContext gctx, Node node) {
         if (node.isLeaf) {
-            gctx.setStroke(Color.WHITE);
+            gctx.setStroke(Color.GRAY);
             gctx.strokeRect(node.pos.x, node.pos.y, node.dim.x, node.dim.y);
         }
         else {
@@ -70,7 +70,9 @@ public class QuadTree {
         }
     }
 
-    public QuadTree() {
+    public QuadTree(int maxDepth, int cap) {
+        this.maxDepth = maxDepth;
+        this.cap = cap;
         rootNode = new Node(new Vector2D(0, 0), new Vector2D(Demo.WIDTH, Demo.HEIGHT));
     }
 

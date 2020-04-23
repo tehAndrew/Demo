@@ -75,6 +75,8 @@ public class Ball {
         else {
             gctx.setFill(Color.rgb(30, 50, 200));
         }
+        gctx.setStroke(Color.BLACK);
+        gctx.strokeOval(pos.x - radius, pos.y - radius, radius * 2, radius * 2);
         gctx.fillOval(pos.x - radius, pos.y - radius, radius * 2, radius * 2);
     }
 }

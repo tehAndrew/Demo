@@ -4,25 +4,20 @@ import java.util.ArrayList;
 import java.util.Random;
 
 public class Arena {
-    private final int MIN_RADIUS = 2;
-    private final int MAX_RADIUS = 4;
-    private final double MIN_VEL = 0.2;
-    private final double MAX_VEL = 1;
-
+    private ArenaSettings as;
     private ArrayList<Ball> balls;
     private QuadTree qt;
-    private int ballAmount;
     private int collisionChecks;
     private int collisionsOccuring;
 
     private void createBalls() {
         Random rand = new Random();
-        balls = new ArrayList<>(ballAmount);
-        for (int i = 0; i < ballAmount; i++) {
-            double radius = MIN_RADIUS + rand.nextDouble() * (MAX_RADIUS - MIN_RADIUS);
-            double x = radius + rand.nextDouble() * (Demo.WIDTH - 2 * radius);
-            double y = radius + rand.nextDouble() * (Demo.HEIGHT - 2 * radius);
-            double vel = MIN_VEL + rand.nextDouble() * (MAX_VEL - MIN_VEL);
+        balls = new ArrayList<>(as.ballAmount);
+        for (int i = 0; i < as.ballAmount; i++) {
+            double radius = as.minRadius + rand.nextDouble() * (as.maxRadius - as.minRadius);
+            double x = as.spawnRectX + rand.nextDouble() * (as.spawnRectW);
+            double y = as.spawnRectY + rand.nextDouble() * (as.spawnRectH);
+            double vel = as.minVel + rand.nextDouble() * (as.maxVel - as.minVel);
             double dir = rand.nextDouble() * 2 * Math.PI;
             balls.add(new Ball(new Vector2D(x, y), radius, vel, dir));
         }
@@ -53,15 +48,15 @@ public class Arena {
         }
     }
 
-    public Arena(int ballAmount) {
-        this.ballAmount = ballAmount;
+    public Arena(ArenaSettings as) {
+        this.as = as;
         collisionChecks = 0;
         collisionsOccuring = 0;
         createBalls();
     }
 
     public int getBallAmount() {
-        return ballAmount;
+        return as.ballAmount;
     }
 
     public int getCollisionChecks() {
@@ -73,7 +68,7 @@ public class Arena {
     }
 
     public void update() {
-        qt = new QuadTree();
+        qt = new QuadTree(as.maxDepth, as.cap);
         for (Ball ball : balls) {
             qt.insert(ball);
         }
@@ -86,12 +81,19 @@ public class Arena {
         }
 
         for(Ball ball : balls) {
-            collisionCheckQuadTree(ball);
+            if (as.usingQuadTree) {
+                collisionCheckQuadTree(ball);
+            }
+            else {
+                collisionCheck(ball);
+            }
         }
     }
 
     public void draw(GraphicsContext gctx) {
-        qt.draw(gctx);
+        if (as.usingQuadTree && as.drawingQuadTree) {
+            qt.draw(gctx);
+        }
         for(Ball ball : balls) {
             ball.draw(gctx);
         }
